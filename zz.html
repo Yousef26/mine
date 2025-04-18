@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الذاكرة اللانهائية للأطفال</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+            text-align: center;
+            background-color: #f0f9ff;
+            padding: 20px;
+            background-image: radial-gradient(circle, #e3f2fd 10%, transparent 10%);
+            background-size: 20px 20px;
+        }
+        .game-container {
+            background-color: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            border: 5px solid #FF9800;
+        }
+        h1 {
+            color: #E91E63;
+            text-shadow: 2px 2px 0 #FFC107;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .memory-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 30px auto;
+            max-width: 500px;
+        }
+        .card {
+            height: 100px;
+            background-color: #FF5722;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 0 #E64A19;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+        .card.flipped {
+            background-color: white;
+            color: #333;
+            transform: rotateY(180deg);
+            box-shadow: 0 5px 0 #BDBDBD;
+        }
+        .card.matched {
+            background-color: #4CAF50;
+            color: white;
+            box-shadow: 0 5px 0 #2E7D32;
+            cursor: default;
+            animation: bounce 0.5s;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .moves, .timer, .level {
+            background-color: #3F51B5;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            min-width: 100px;
+        }
+        button {
+            background-color: #9C27B0;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+            box-shadow: 0 5px 0 #7B1FA2;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background-color: #8E24AA;
+            transform: translateY(-3px);
+        }
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #7B1FA2;
+        }
+        #message {
+            font-size: 1.5em;
+            min-height: 60px;
+            margin: 20px 0;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 100px;
+            animation: zoomIn 0.5s, float 3s ease-in-out infinite;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .emoji {
+            font-size: 1.5em;
+            margin: 0 5px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .level-selector {
+            margin: 20px 0;
+            display: none; /* إخفاء محدد المستوى لأن اللعبة أصبحت تلقائية */
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🧠 لعبة الذاكرة اللانهائية 🧠</h1>
+        <p>إبحث عن البطاقات المتطابقة وحسّن ذاكرتك!</p>
+        
+        <div class="stats">
+            <div class="level">المستوى: <span id="level">1</span></div>
+            <div class="moves">الحركات: <span id="moves">0</span></div>
+            <div class="timer">الوقت: <span id="time">00:00</span></div>
+        </div>
+        
+        <div class="memory-board" id="board"></div>
+        
+        <div id="message">إبدأ بالضغط على أي بطاقة!</div>
+        
+        <button id="restart">إبدأ من جديد</button>
+    </div>
+
+    <script>
+        // الرموز الممكنة للعبة (مناسبة للأطفال)
+        const emojis = [
+            '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼',
+            '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔',
+            '🐧', '🐦', '🐤', '🦄', '🐝', '🦋', '🐞', '🐠',
+            '🐙', '🦑', '🐬', '🦈', '🐘', '🦒', '🦏', '🐪',
+            '🌵', '🎄', '🌹', '🌸', '🌼', '🌻', '🍀', '🌴',
+            '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓',
+            '🍒', '🍑', '🍍', '🥥', '🥝', '🥭', '🍕', '🍔',
+            '🍟', '🌭', '🍿', '🍫', '🍩', '🍪', '🎂', '🍦'
+        ];
+
+        // الرسائل التحفيزية
+        const motivationalMessages = [
+            "رائع! ذاكرتك قوية! 🧠✨",
+            "أحسنت! أنت سريع التعلم! 🚀",
+            "عبقري! تستحق وسامًا! 🏅",
+            "ذهبي! واصل التميز! ⭐",
+            "إبداع! هذه ذاكرة خارقة! 🌈",
+            "مذهل! هل لديك ذاكرة فوتوغرافية؟ 📸",
+            "بطل! كأنك كمبيوتر! 💻",
+            "إستمر! أنت تتفوق على نفسك! 🔥",
+            "ممتاز! عقلك يعمل بسرعة البرق! ⚡",
+            "لا يصدق! أنت تتحدى المستحيل! 💪"
+        ];
+
+        let cards = [];
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matches = 0;
+        let timer;
+        let seconds = 0;
+        let currentLevel = 1;
+        let cardCount = 8; // نبدأ بـ 8 بطاقات (4 أزواج)
+
+        // تهيئة اللعبة
+        function initGame() {
+            stopTimer();
+            moves = 0;
+            matches = 0;
+            seconds = 0;
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('time').textContent = '00:00';
+            document.getElementById('level').textContent = currentLevel;
+            document.getElementById('message').innerHTML = 'إبحث عن البطاقات المتطابقة!';
+            
+            createBoard();
+            startTimer();
+        }
+
+        // إنشاء لوحة اللعب
+        function createBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            
+            // حساب عدد الصفوف والأعمدة بناءً على عدد البطاقات
+            const gridSize = Math.ceil(Math.sqrt(cardCount));
+            board.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+            
+            // اختيار الرموز العشوائية
+            const selectedEmojis = emojis.slice(0, cardCount/2);
+            const gameEmojis = [...selectedEmojis, ...selectedEmojis];
+            
+            // خلط الرموز
+            cards = shuffleArray(gameEmojis);
+            
+            // إنشاء البطاقات
+            cards.forEach(emoji => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.emoji = emoji;
+                card.innerHTML = `<span style="visibility: hidden;">${emoji}</span>`;
+                card.addEventListener('click', flipCard);
+                board.appendChild(card);
+            });
+        }
+
+        // قلب البطاقة
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+            if (this.classList.contains('matched')) return;
+            
+            this.classList.add('flipped');
+            this.querySelector('span').style.visibility = 'visible';
+            
+            if (!hasFlippedCard) {
+                // أول بطاقة
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+            
+            // ثاني بطاقة
+            secondCard = this;
+            checkForMatch();
+            countMove();
+        }
+
+        // التحقق من التطابق
+        function checkForMatch() {
+            const isMatch = firstCard.dataset.emoji === secondCard.dataset.emoji;
+            
+            if (isMatch) {
+                disableCards();
+                matches++;
+                showMotivationalMessage();
+                checkWin();
+            } else {
+                unflipCards();
+            }
+        }
+
+        // تعطيل البطاقات المتطابقة
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            
+            resetBoard();
+        }
+
+        // إعادة البطاقات غير المتطابقة
+        function unflipCards() {
+            lockBoard = true;
+            
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                firstCard.querySelector('span').style.visibility = 'hidden';
+                secondCard.querySelector('span').style.visibility = 'hidden';
+                
+                resetBoard();
+            }, 1000);
+        }
+
+        // إعادة ضبط اللوحة
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+
+        // عد الحركات
+        function countMove() {
+            moves++;
+            document.getElementById('moves').textContent = moves;
+            
+            // رسائل تشجيعية حسب عدد الحركات
+            if (moves === 5) {
+                document.getElementById('message').textContent = "أنت على الطريق الصحيح! 💪";
+            } else if (moves === 10) {
+                document.getElementById('message').textContent = "استمر! الذاكرة تتحسن مع التدريب! 🧠";
+            }
+        }
+
+        // بدء المؤقت
+        function startTimer() {
+            timer = setInterval(() => {
+                seconds++;
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                document.getElementById('time').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // إيقاف المؤقت
+        function stopTimer() {
+            clearInterval(timer);
+        }
+
+        // التحقق من الفوز
+        function checkWin() {
+            if (matches === cardCount/2) {
+                stopTimer();
+                showWinCelebration();
+                
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                const timeString = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+                
+                document.getElementById('message').innerHTML = `
+                    <div style="color: #4CAF50; font-size: 1.8em;">🎉 فوز رائع! 🎉</div>
+                    <div>أكملت المستوى ${currentLevel} في ${moves} حركة و ${timeString} دقيقة</div>
+                    <div style="margin-top: 10px;">${getWinMessage(moves, seconds)}</div>
+                `;
+                
+                // الانتقال للمستوى التالي بعد 3 ثوان
+                setTimeout(() => {
+                    nextLevel();
+                }, 3000);
+            }
+        }
+
+        // الانتقال للمستوى التالي
+        function nextLevel() {
+            currentLevel++;
+            
+            // زيادة الصعوبة تدريجياً
+            if (currentLevel <= 5) {
+                cardCount = 8; // المستويات 1-5: 8 بطاقات
+            } else if (currentLevel <= 10) {
+                cardCount = 12; // المستويات 6-10: 12 بطاقة
+            } else if (currentLevel <= 15) {
+                cardCount = 16; // المستويات 11-15: 16 بطاقة
+            } else if (currentLevel <= 20) {
+                cardCount = 20; // المستويات 16-20: 20 بطاقة
+            } else if (currentLevel <= 25) {
+                cardCount = 24; // المستويات 21-25: 24 بطاقة
+            } else {
+                cardCount = 24 + Math.floor((currentLevel - 25) / 5) * 4; // زيادة 4 بطاقات كل 5 مستويات
+                cardCount = Math.min(cardCount, 48); // الحد الأقصى 48 بطاقة (24 زوج)
+            }
+            
+            initGame();
+        }
+
+        // رسالة الفوز بناءً على الأداء
+        function getWinMessage(moves, seconds) {
+            const efficiency = moves / (cardCount/2);
+            
+            if (efficiency < 1.5) {
+                return "ذاكرة خارقة! أنت عبقري! 🧠✨";
+            } else if (efficiency < 2) {
+                return "أداء ممتاز! ذاكرتك قوية جدًا! 💪";
+            } else if (efficiency < 2.5) {
+                return "جيد جدًا! مع الممارسة ستصبح الأفضل! 🌟";
+            } else {
+                return "حاول مرة أخرى! الممارسة تصنع الفرق! 🔄";
+            }
+        }
+
+        // عرض رسالة تحفيزية
+        function showMotivationalMessage() {
+            if (matches % 2 === 0) {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                document.getElementById('message').innerHTML = randomMessage;
+                
+                // تغيير اللون عشوائياً
+                const colors = ['#E91E63', '#9C27B0', '#3F51B5', '#2196F3', '#009688', '#4CAF50', '#FFC107', '#FF9800'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                document.getElementById('message').style.color = randomColor;
+            }
+        }
+
+        // عرض احتفال الفوز
+        function showWinCelebration() {
+            const emojis = ['🎉', '✨', '🏆', '🌟', '👑', '💫', '⭐', '🌈'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const celebration = document.createElement('div');
+                    celebration.className = 'celebration';
+                    celebration.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    celebration.style.left = `${Math.random() * 100}%`;
+                    celebration.style.top = `${Math.random() * 100}%`;
+                    celebration.style.fontSize = `${Math.random() * 50 + 50}px`;
+                    celebration.style.animationDelay = `${Math.random() * 0.5}s`;
+                    
+                    document.body.appendChild(celebration);
+                    
+                    setTimeout(() => {
+                        celebration.remove();
+                    }, 3000);
+                }, i * 150);
+            }
+        }
+
+        // دالة لخلط المصفوفة
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // زر إعادة اللعبة
+        document.getElementById('restart').addEventListener('click', function() {
+            currentLevel = 1;
+            cardCount = 8;
+            initGame();
+        });
+
+        // بدء اللعبة
+        initGame();
+    </script>
+</body>
+</html>

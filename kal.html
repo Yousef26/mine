@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الكلمات اللانهائية للأطفال</title>
+    <style>
+        body {
+            font-family: 'Tajawal', 'Arial Rounded MT Bold', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .game-container {
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            border: 4px solid #4CAF50;
+            position: relative;
+            overflow: hidden;
+        }
+        .game-container::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            opacity: 0.3;
+            z-index: 0;
+        }
+        h1 {
+            color: #e74c3c;
+            margin: 0 0 10px;
+            font-size: 2.2em;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .subtitle {
+            font-size: 1.2em;
+            color: #3F51B5;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .letters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            position: relative;
+        }
+        .letter {
+            background: linear-gradient(135deg, #FF9800 0%, #FB8C00 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #E65100;
+            transition: all 0.2s;
+            position: relative;
+            z-index: 1;
+        }
+        .letter:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 0 #E65100;
+        }
+        .letter:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #E65100;
+        }
+        .letter.selected {
+            visibility: hidden;
+        }
+        #word {
+            font-size: 40px;
+            margin: 30px 0;
+            min-height: 60px;
+            letter-spacing: 8px;
+            color: #2E7D32;
+            font-weight: bold;
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+        .word-correct {
+            animation: wordCorrect 1s;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        button {
+            background: linear-gradient(135deg, #FF5722 0%, #F4511E 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 6px 0 #E64A19;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            min-width: 150px;
+        }
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 0 #E64A19;
+        }
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #E64A19;
+        }
+        button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        button:hover::after {
+            opacity: 1;
+        }
+        #hint {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            box-shadow: 0 6px 0 #0D47A1;
+        }
+        #hint:hover {
+            box-shadow: 0 8px 0 #0D47A1;
+        }
+        #hint:active {
+            box-shadow: 0 3px 0 #0D47A1;
+        }
+        #message {
+            font-size: 1.5em;
+            min-height: 60px;
+            margin: 25px 0;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.5s;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .correct {
+            color: #27ae60;
+            background-color: #e8f5e9;
+            border: 2px solid #27ae60;
+            animation: bounce 0.5s;
+        }
+        .incorrect {
+            color: #e74c3c;
+            background-color: #ffebee;
+            border: 2px solid #e74c3c;
+            animation: shake 0.5s;
+        }
+        .hint {
+            color: #1976D2;
+            background-color: #e3f2fd;
+            border: 2px solid #1976D2;
+        }
+        #score-container {
+            display: flex;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+        .score-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .score-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .score-label {
+            color: #7f8c8d;
+            font-size: 1em;
+        }
+        #streak {
+            color: #e74c3c;
+        }
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 100px;
+        }
+        .confetti {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            opacity: 0;
+        }
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background-color: #ecf0f1;
+            border-radius: 6px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes wordCorrect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); background: #c8e6c9; }
+            100% { transform: scale(1); }
+        }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        @media (max-width: 600px) {
+            .letter {
+                width: 50px;
+                height: 50px;
+                font-size: 28px;
+            }
+            #word {
+                font-size: 32px;
+            }
+            button {
+                padding: 12px 20px;
+                font-size: 1em;
+                min-width: 120px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="floating">🧩 لعبة الكلمات اللانهائية 🧩</h1>
+        <p class="subtitle">إختار الحروف لتكوين كلمة صحيحة!</p>
+        
+        <div id="score-container">
+            <div class="score-box">
+                <span class="score-label">المستوى</span>
+                <span class="score-value" id="level">1</span>
+            </div>
+            <div class="score-box">
+                <span class="score-label">النقاط</span>
+                <span class="score-value" id="score">0</span>
+            </div>
+            <div class="score-box">
+                <span class="score-label">التتابع</span>
+                <span class="score-value" id="streak">0</span>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress"></div>
+        </div>
+        
+        <div id="word"></div>
+        
+        <div class="letters" id="letters"></div>
+        
+        <div class="buttons">
+            <button id="check">✅ تحقق</button>
+            <button id="hint">💡 مساعدة</button>
+            <button id="new-word">🔄 كلمة جديدة</button>
+        </div>
+        
+        <div id="message"></div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        // نظام توليد الكلمات التلقائي
+        class WordGenerator {
+            constructor() {
+                this.levels = [
+                    { length: 3, count: 15 },   // المستوى 1-3: كلمات من 3 أحرف
+                    { length: 4, count: 30 },   // المستوى 4-6: كلمات من 4 أحرف
+                    { length: 5, count: 50 },   // المستوى 7-9: كلمات من 5 أحرف
+                    { length: [4,5], count: 75 },  // المستوى 10-12: مزيج
+                    { length: [5,6], count: 100 }, // المستوى 13-15: كلمات أطول
+                    { length: [6,7], count: 150 }  // المستوى 16+: كلمات متقدمة
+                ];
+                
+                // قوائم الكلمات حسب الطول
+                this.wordLists = {
+                    3: ["قط", "كلب", "باب", "شمس", "قمر", "ورد", "عين", "يد", "فم", "دار", "بحر", "شجر", "حبل", "ذهب", "وجه"],
+                    4: ["كتاب", "قلم", "باب", "شمس", "قمر", "ورد", "بحر", "سمك", "بيت", "شجر", "عين", "يد", "تفاح", "موز", "حليب"],
+                    5: ["مدرسة", "تلميذ", "قلم", "دفتر", "سبورة", "كراسة", "ممحاة", "مقلمة", "حقيبة", "حاسوب", "طالب", "معلم", "فصل", "مكتب", "كرسي"],
+                    6: ["تفاحة", "برتقال", "موزة", "فراولة", "عنب", "بطيخ", "شمام", "خوخ", "كمثرى", "مانجو", "ليمون", "رمان", "توت", "أناناس", "كيوي"],
+                    7: ["مستقبل", "تكنولوجيا", "علم", "معرفة", "اكتشاف", "اختراع", "تجربة", "بحث", "دراسة", "تحليل", "نتيجة", "فهم", "إدراك", "ذكاء", "إبداع"]
+                };
+                
+                // كلمات تم استخدامها لتجنب التكرار
+                this.usedWords = [];
+            }
+            
+            // توليد كلمة جديدة حسب المستوى
+            generateWord(level) {
+                const levelIndex = Math.min(Math.floor((level - 1) / 3), this.levels.length - 1);
+                const levelConfig = this.levels[levelIndex];
+                
+                let wordLength;
+                if (Array.isArray(levelConfig.length)) {
+                    // اختيار طول عشوائي من الخيارات المتاحة
+                    const randomIndex = Math.floor(Math.random() * levelConfig.length.length);
+                    wordLength = levelConfig.length[randomIndex];
+                } else {
+                    wordLength = levelConfig.length;
+                }
+                
+                // إذا لم يكن لدينا كلمات كافية لهذا الطول، نزيد الطول
+                while (!this.wordLists[wordLength] || this.wordLists[wordLength].length === 0) {
+                    wordLength++;
+                }
+                
+                // اختيار كلمة عشوائية من القائمة
+                const availableWords = this.wordLists[wordLength].filter(word => !this.usedWords.includes(word));
+                
+                // إذا استخدمنا كل الكلمات، نعيد استخدامها من جديد
+                if (availableWords.length === 0) {
+                    this.usedWords = [];
+                    return this.generateWord(level);
+                }
+                
+                const randomIndex = Math.floor(Math.random() * availableWords.length);
+                const selectedWord = availableWords[randomIndex];
+                
+                // إضافة الكلمة إلى المستخدمة
+                this.usedWords.push(selectedWord);
+                
+                return selectedWord;
+            }
+        }
+
+        // الرسائل التحفيزية
+        const motivationalMessages = [
+            "أحسنت! 👏", "عبقري! 🧠", "رائع! 🌟", "ذهبي! 🏅", 
+            "إجابة صحيحة! ✅", "ممتاز! ⭐", "برافو! 🎉", "تستحق وسام! 🏆",
+            "إبداع! ✨", "لا يوقفك شيء! 💪", "أفضل لاعب! 🎮", "فخر المدرسة! 📚",
+            "عبقري العربية! 📖", "سريع البديهة! ⚡", "مذهل! 😲", "لا يعلى عليه! 👑"
+        ];
+
+        // عناصر DOM
+        const wordEl = document.getElementById('word');
+        const lettersEl = document.getElementById('letters');
+        const messageEl = document.getElementById('message');
+        const checkBtn = document.getElementById('check');
+        const hintBtn = document.getElementById('hint');
+        const newWordBtn = document.getElementById('new-word');
+        const scoreEl = document.getElementById('score');
+        const levelEl = document.getElementById('level');
+        const streakEl = document.getElementById('streak');
+        const progressEl = document.getElementById('progress');
+        const celebrationEl = document.getElementById('celebration');
+
+        // متغيرات اللعبة
+        let currentWord = '';
+        let selectedLetters = [];
+        let score = 0;
+        let currentLevel = 1;
+        let currentStreak = 0;
+        let progress = 0;
+        const wordGenerator = new WordGenerator();
+
+        // تهيئة اللعبة
+        function initGame() {
+            currentWord = wordGenerator.generateWord(currentLevel);
+            selectedLetters = [];
+            displayWord();
+            scrambleLetters();
+            messageEl.textContent = '';
+            messageEl.className = '';
+            
+            // تمكين جميع الأزرار
+            checkBtn.disabled = false;
+            hintBtn.disabled = false;
+        }
+
+        // عرض الكلمة الحالية
+        function displayWord() {
+            wordEl.textContent = selectedLetters.join(' ') || '_'.repeat(currentWord.length).split('').join(' ');
+        }
+
+        // خلط الحروف
+        function scrambleLetters() {
+            lettersEl.innerHTML = '';
+            
+            // إضافة حروف الكلمة + بعض الحروف العشوائية في المستويات المتقدمة
+            let lettersToScramble = currentWord.split('');
+            
+            // إضافة حروف عشوائية في المستويات المتقدمة
+            if (currentLevel > 6) {
+                const extraLettersCount = Math.floor(currentLevel / 3);
+                const arabicLetters = 'ابتثجحخدذرزسشصضطظعغفقكلمنهوي';
+                
+                for (let i = 0; i < extraLettersCount; i++) {
+                    const randomIndex = Math.floor(Math.random() * arabicLetters.length);
+                    lettersToScramble.push(arabicLetters[randomIndex]);
+                }
+            }
+            
+            // خلط الحروف
+            lettersToScramble = shuffleArray(lettersToScramble);
+            
+            // إنشاء عناصر الحروف
+            lettersToScramble.forEach((letter, index) => {
+                const letterEl = document.createElement('div');
+                letterEl.className = 'letter';
+                letterEl.textContent = letter;
+                letterEl.dataset.index = index;
+                letterEl.onclick = () => selectLetter(letter, letterEl);
+                lettersEl.appendChild(letterEl);
+            });
+        }
+
+        // اختيار حرف
+        function selectLetter(letter, letterEl) {
+            if (selectedLetters.length < currentWord.length) {
+                selectedLetters.push(letter);
+                letterEl.classList.add('selected');
+                displayWord();
+                
+                // إذا اكتملت الكلمة، تحقق تلقائياً
+                if (selectedLetters.length === currentWord.length) {
+                    checkWord();
+                }
+            }
+        }
+
+        // التحقق من الكلمة
+        function checkWord() {
+            const userWord = selectedLetters.join('');
+            
+            if (userWord === currentWord) {
+                // إجابة صحيحة
+                handleCorrectAnswer();
+            } else {
+                // إجابة خاطئة
+                handleWrongAnswer();
+            }
+        }
+
+        // معالجة الإجابة الصحيحة
+        function handleCorrectAnswer() {
+            currentStreak++;
+            score += calculatePoints();
+            progress += calculateProgress();
+            
+            // عرض رسالة تحفيزية
+            const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            showMessage(randomMessage, 'correct');
+            
+            // تأثير نجاح على الكلمة
+            wordEl.classList.add('word-correct');
+            
+            // تحديث واجهة المستخدم
+            updateUI();
+            
+            // عرض تأثير الاحتفال
+            if (currentStreak % 3 === 0) {
+                showCelebration();
+            }
+            
+            // الانتقال للمستوى التالي إذا اكتمل التقدم
+            if (progress >= 100) {
+                levelUp();
+            } else {
+                // الانتقال للكلمة التالية بعد ثانية
+                setTimeout(() => {
+                    wordEl.classList.remove('word-correct');
+                    initGame();
+                }, 1500);
+            }
+        }
+
+        // معالجة الإجابة الخاطئة
+        function handleWrongAnswer() {
+            currentStreak = 0;
+            score = Math.max(0, score - 2);
+            progress = Math.max(0, progress - 10);
+            
+            // عرض رسالة تشجيعية
+            showMessage("حاول مرة أخرى! 💪", 'incorrect');
+            
+            // إعادة تعيين الحروف المختارة
+            resetSelection();
+            
+            // تحديث واجهة المستخدم
+            updateUI();
+        }
+
+        // إعادة تعيين الاختيارات
+        function resetSelection() {
+            selectedLetters = [];
+            displayWord();
+            
+            // إعادة عرض جميع الحروف
+            const letterElements = document.querySelectorAll('.letter');
+            letterElements.forEach(el => {
+                el.classList.remove('selected');
+            });
+        }
+
+        // ترقية المستوى
+        function levelUp() {
+            currentLevel++;
+            progress = 0;
+            levelEl.textContent = currentLevel;
+            
+            // عرض رسالة خاصة عند وصول لمستويات معينة
+            if (currentLevel === 5) {
+                showMessage('🎉 وصلت للمستوى 5! أصبحت محترف كلمات من 4 أحرف!', 'correct');
+            } else if (currentLevel === 10) {
+                showMessage('🏆 وصلت للمستوى 10! أنت الآن بطل الكلمات!', 'correct');
+            } else if (currentLevel === 15) {
+                showMessage('👑 وصلت للمستوى 15! أنت سيد اللغة العربية الآن!', 'correct');
+            }
+            
+            // الانتقال للكلمة التالية بعد ثانية
+            setTimeout(() => {
+                wordEl.classList.remove('word-correct');
+                initGame();
+            }, 1500);
+        }
+
+        // عرض رسالة
+        function showMessage(message, type) {
+            messageEl.textContent = message;
+            messageEl.className = type;
+        }
+
+        // عرض تأثير الاحتفال
+        function showCelebration() {
+            celebrationEl.style.display = 'flex';
+            celebrationEl.innerHTML = '';
+            
+            // إنشاء 50 قطعة كونفيتي
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = -10 + 'px';
+                confetti.style.backgroundColor = getRandomColor();
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                // تأثير السقوط
+                const animation = confetti.animate([
+                    { top: '-10px', opacity: 1 },
+                    { top: '100vh', opacity: 0 }
+                ], {
+                    duration: 3000 + Math.random() * 2000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)'
+                });
+                
+                celebrationEl.appendChild(confetti);
+                
+                // إزالة الكونفيتي بعد الانتهاء
+                animation.onfinish = () => {
+                    confetti.remove();
+                };
+            }
+            
+            // إخفاء تأثيرات الاحتفال بعد 3 ثواني
+            setTimeout(() => {
+                celebrationEl.style.display = 'none';
+            }, 3000);
+        }
+
+        // الحصول على لون عشوائي
+        function getRandomColor() {
+            const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#1abc9c', '#e67e22', '#34495e'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // حساب النقاط
+        function calculatePoints() {
+            let points = currentLevel * 2;
+            
+            // مكافأة التتابع
+            if (currentStreak >= 3) {
+                points += Math.floor(currentStreak / 3) * currentLevel;
+            }
+            
+            return points;
+        }
+
+        // حساب التقدم للمستوى التالي
+        function calculateProgress() {
+            return 100 / (5 + Math.floor(currentLevel / 2));
+        }
+
+        // عرض مساعدة
+        function showHint() {
+            if (score > 0) {
+                score -= 3;
+                updateUI();
+            }
+            
+            let hint = '';
+            if (currentLevel < 5) {
+                hint = `💡 الكلمة تتكون من ${currentWord.length} أحرف، أول حرف هو ${currentWord[0]}`;
+            } else if (currentLevel < 10) {
+                hint = `💡 الكلمة تتكون من ${currentWord.length} أحرف، أول حرف هو ${currentWord[0]} وآخر حرف هو ${currentWord[currentWord.length-1]}`;
+            } else {
+                const randomIndex = Math.floor(Math.random() * currentWord.length);
+                hint = `💡 الحرف رقم ${randomIndex + 1} هو ${currentWord[randomIndex]}`;
+            }
+            
+            showMessage(hint, 'hint');
+        }
+
+        // تحديث واجهة المستخدم
+        function updateUI() {
+            scoreEl.textContent = score;
+            streakEl.textContent = currentStreak;
+            progressEl.style.width = progress + '%';
+            
+            // تغيير لون عداد التتابع حسب الطول
+            if (currentStreak >= 5) {
+                streakEl.style.color = '#2ecc71';
+            } else if (currentStreak >= 3) {
+                streakEl.style.color = '#f39c12';
+            } else {
+                streakEl.style.color = '#e74c3c';
+            }
+        }
+
+        // خلط المصفوفة عشوائياً
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // إعداد الأحداث
+        checkBtn.addEventListener('click', checkWord);
+        hintBtn.addEventListener('click', showHint);
+        newWordBtn.addEventListener('click', () => {
+            if (confirm('هل تريد تخطي هذه الكلمة؟ ستفقد نقطتين من نقاطك.')) {
+                score = Math.max(0, score - 2);
+                initGame();
+                updateUI();
+            }
+        });
+
+        // بدء اللعبة
+        initGame();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة أطفال - التعليم عن بعد</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --dark: #292F36;
+            --light: #F7FFF7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        /* شريط التنقل */
+        .navbar {
+            background-color: var(--primary);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-left: 10px;
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-right: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            right: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+            left: 0;
+        }
+        
+        /* قسم الهيرو */
+        .hero {
+            background: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.8)), url('https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1472&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
+            margin-top: 70px;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            animation: bounce 2s infinite;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            color: var(--dark);
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            background-color: var(--primary);
+        }
+        
+        /* قسم القرآن الكريم */
+        .quran-section {
+            padding: 5rem 10%;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 5px;
+            background-color: var(--accent);
+            border-radius: 5px;
+        }
+        
+        .surahs-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .surah-card {
+            background-color: var(--light);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .surah-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border-color: var(--secondary);
+        }
+        
+        .surah-number {
+            background-color: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-weight: bold;
+        }
+        
+        .surah-name {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .surah-meaning {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* قسم الألعاب التعليمية */
+        .games {
+            padding: 5rem 10%;
+            background-color: var(--light);
+        }
+        
+        .games-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+        }
+        
+        .game-card {
+            background-color: white;
+            border-radius: 15px;
+            width: 300px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .game-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .game-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .game-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .game-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .play-button {
+            display: inline-block;
+            background-color: var(--accent);
+            color: var(--dark);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .play-button:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* قسم الإنجازات */
+        .achievements {
+            padding: 5rem 10%;
+            background-color: white;
+        }
+        
+        .achievements-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .badge {
+            width: 100px;
+            height: 100px;
+            background-color: var(--light);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .badge:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .badge i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .badge.locked {
+            filter: grayscale(100%);
+            opacity: 0.7;
+        }
+        
+        .badge.locked::after {
+            content: '\f023';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: var(--dark);
+        }
+        
+        .progress-section {
+            background-color: var(--light);
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .progress-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .progress-item {
+            margin-bottom: 1.5rem;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-bar-container {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--secondary);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        /* الفوتر */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 3rem 10%;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+            text-align: right;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-column ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column ul li a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            margin: 0 0.5rem;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .copyright {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        /* شخصية كرتونية مساعدة */
+        .assistant {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .assistant:hover {
+            transform: scale(1.1);
+            background-color: var(--secondary);
+        }
+        
+        /* تأثيرات حركية */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* لعبة الرياضيات البسيطة */
+        .math-game {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+            z-index: 1001;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .math-game h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .math-problem {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+        
+        .math-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .math-option {
+            background-color: var(--light);
+            border: 2px solid var(--secondary);
+            border-radius: 10px;
+            padding: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .math-option:hover {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .math-feedback {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            min-height: 2rem;
+        }
+        
+        .correct {
+            color: green;
+        }
+        
+        .incorrect {
+            color: red;
+        }
+        
+        .close-game {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .close-game:hover {
+            background-color: var(--dark);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-links li {
+                margin: 0.5rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .assistant {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+                bottom: 20px;
+                left: 20px;
+            }
+            
+            .surahs-container {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span>منصة أطفال</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">الرئيسية</a></li>
+            <li><a href="#quran">القرآن الكريم</a></li>
+            <li><a href="#games">الألعاب</a></li>
+            <li><a href="#achievements">إنجازاتي</a></li>
+        </ul>
+    </nav>
+
+    <!-- قسم الهيرو -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="floating">مرحبًا بكم في منصة أطفال التعليمية!</h1>
+            <p>منصة تفاعلية ممتعة تساعد الأطفال على تعلم القرآن الكريم والعلوم الإسلامية بطريقة جذابة وسهلة</p>
+            <a href="#quran" class="cta-button floating">ابدأ التعلم الآن</a>
+        </div>
+    </section>
+
+    <!-- قسم القرآن الكريم -->
+    <section class="quran-section" id="quran">
+        <div class="section-title">
+            <h2>القرآن الكريم</h2>
+        </div>
+        <div class="surahs-container">
+            <!-- سورة الفاتحة -->
+            <div class="surah-card" onclick="window.open('https://quran.com/1', '_blank')">
+                <div class="surah-number">1</div>
+                <h3 class="surah-name">الفاتحة</h3>
+                <p class="surah-meaning">سورة الفاتحة</p>
+            </div>
+            
+            <!-- سورة البقرة -->
+            <div class="surah-card" onclick="window.open('https://quran.com/2', '_blank')">
+                <div class="surah-number">2</div>
+                <h3 class="surah-name">البقرة</h3>
+                <p class="surah-meaning">سورة البقرة</p>
+            </div>
+            
+            <!-- سورة يس -->
+            <div class="surah-card" onclick="window.open('https://quran.com/36', '_blank')">
+                <div class="surah-number">36</div>
+                <h3 class="surah-name">يس</h3>
+                <p class="surah-meaning">قلب القرآن</p>
+            </div>
+            
+            <!-- سورة الرحمن -->
+            <div class="surah-card" onclick="window.open('https://quran.com/55', '_blank')">
+                <div class="surah-number">55</div>
+                <h3 class="surah-name">الرحمن</h3>
+                <p class="surah-meaning">عروس القرآن</p>
+            </div>
+            
+            <!-- سورة الواقعة -->
+            <div class="surah-card" onclick="window.open('https://quran.com/56', '_blank')">
+                <div class="surah-number">56</div>
+                <h3 class="surah-name">الواقعة</h3>
+                <p class="surah-meaning">سورة الغنى</p>
+            </div>
+            
+            <!-- سورة الملك -->
+            <div class="surah-card" onclick="window.open('https://quran.com/67', '_blank')">
+                <div class="surah-number">67</div>
+                <h3 class="surah-name">الملك</h3>
+                <p class="surah-meaning">المانعة من عذاب القبر</p>
+            </div>
+            
+            <!-- سورة الإخلاص -->
+            <div class="surah-card" onclick="window.open('https://quran.com/112', '_blank')">
+                <div class="surah-number">112</div>
+                <h3 class="surah-name">الإخلاص</h3>
+                <p class="surah-meaning">ثلث القرآن</p>
+            </div>
+            
+            <!-- سورة الفلق -->
+            <div class="surah-card" onclick="window.open('https://quran.com/113', '_blank')">
+                <div class="surah-number">113</div>
+                <h3 class="surah-name">الفلق</h3>
+                <p class="surah-meaning">المعوذتان</p>
+            </div>
+            
+            <!-- سورة الناس -->
+            <div class="surah-card" onclick="window.open('https://quran.com/114', '_blank')">
+                <div class="surah-number">114</div>
+                <h3 class="surah-name">الناس</h3>
+                <p class="surah-meaning">المعوذتان</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم الألعاب التعليمية -->
+    <section class="games" id="games">
+        <div class="section-title">
+            <h2>الألعاب التعليمية</h2>
+        </div>
+        <div class="games-container">
+            <div class="game-card">
+                <div class="game-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <h3>لعبة الرياضيات</h3>
+                <p>اختبر مهاراتك في الحساب مع هذه اللعبة الممتعة</p>
+                <a href="mathplay.html" class="play-button">العب الآن</a>
+            </div>
+            
+            <div class="game-card">
+                <div class="game-icon">
+                    <i class="fas fa-spell-check"></i>
+                </div>
+                <h3>لعبة الكلمات</h3>
+                <p>تعلم الكلمات الجديدة وطريقة كتابتها</p>
+                <a href="kal.html" class="play-button">العب الآن</a>
+            </div>
+            
+            <div class="game-card">
+                <div class="game-icon">
+                    <i class="fas fa-puzzle-piece"></i>
+                </div>
+                <h3>لعبة الذاكرة</h3>
+                <p>حسن ذاكرتك مع هذه اللعبة المسلية</p>
+                <a href="zz.html" class="play-button">العب الآن</a>
+            </div>
+            
+            <div class="game-card">
+                <div class="game-icon">
+                    <i class="fas fa-mosque"></i>
+                </div>
+                <h3>التربية الإسلامية</h3>
+                <p>تعلم أساسيات دينك الإسلامي بطريقة ممتعة</p>
+                <a href="islamic-game.html" class="play-button">اذهب الان </a>
+            </div>
+            
+            <div class="game-card">
+                <div class="game-icon">
+                    <i class="fas fa-book-quran"></i>
+                </div>
+                <h3>المصحف التعليمي</h3>
+                <p>تعلم القرآن الكريم وتلاوته بشكل تفاعلي</p>
+                <a href="moshaf.html" class="play-button">اذهب الان </a>
+            </div>
+            
+            <div class="game-card">
+                <div class="game-icon">
+                    <i class="fas fa-star-and-crescent"></i>
+                </div>
+                <h3>السيرة النبوية</h3>
+                <p>تعرف على حياة الرسول ﷺ بطريقة ممتعة</p>
+                <a href="prophet-life.html" class="play-button">اذهب الان </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم الإنجازات -->
+    <section class="achievements" id="achievements">
+        <div class="section-title">
+            <h2>إنجازاتي</h2>
+        </div>
+        <div class="achievements-container">
+            <div class="badge">
+                <i class="fas fa-star"></i>
+                <span>حفظ القرآن</span>
+            </div>
+            <div class="badge">
+                <i class="fas fa-book"></i>
+                <span>القراءة</span>
+            </div>
+            <div class="badge">
+                <i class="fas fa-pray"></i>
+                <span>الصلاة</span>
+            </div>
+            <div class="badge locked">
+                <i class="fas fa-hands-helping"></i>
+                <span>الأخلاق</span>
+            </div>
+            <div class="badge locked">
+                <i class="fas fa-flask"></i>
+                <span>العلماء</span>
+            </div>
+            <div class="badge locked">
+                <i class="fas fa-award"></i>
+                <span>المتميزون</span>
+            </div>
+        </div>
+        
+        <div class="progress-section">
+            <h3 class="progress-title">تقدمي في التعلم</h3>
+            
+            <div class="progress-item">
+                <div class="progress-info">
+                    <span>حفظ القرآن</span>
+                    <span>25%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 25%"></div>
+                </div>
+            </div>
+            
+            <div class="progress-item">
+                <div class="progress-info">
+                    <span>الألعاب التعليمية</span>
+                    <span>60%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 60%"></div>
+                </div>
+            </div>
+            
+            <div class="progress-item">
+                <div class="progress-info">
+                    <span>المهارات الحياتية</span>
+                    <span>40%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 40%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- الفوتر -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>عن المنصة</h3>
+                <p>منصة أطفال هي منصة تعليمية تفاعلية مصممة خصيصًا للأطفال لتسهيل عملية تعلم القرآن الكريم والعلوم الإسلامية.</p>
+            </div>
+            
+            <div class="footer-column">
+                <h3>روابط سريعة</h3>
+                <ul>
+                    <li><a href="#home">الرئيسية</a></li>
+                    <li><a href="#quran">القرآن الكريم</a></li>
+                    <li><a href="#games">الألعاب التعليمية</a></li>
+                    <li><a href="#achievements">إنجازاتي</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>اتصل بنا</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> 0101234556</li>
+                    <li><i class="fas fa-envelope"></i> info@atfal-platform.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> القاهرة، مصر</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+        
+        <div class="copyright">
+            <p>جميع الحقوق محفوظة &copy; 2023 منصة أطفال التعليمية</p>
+        </div>
+    </footer>
+
+    <!-- شخصية كرتونية مساعدة -->
+    <div class="assistant" id="assistant">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <!-- لعبة الرياضيات -->
+    <div class="math-game" id="mathGame">
+        <h3>لعبة الرياضيات</h3>
+        <div class="math-problem" id="mathProblem"></div>
+        <div class="math-options" id="mathOptions"></div>
+        <div class="math-feedback" id="mathFeedback"></div>
+        <button class="close-game" id="closeGame">إغلاق اللعبة</button>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // شخصية المساعد الكرتونية
+        const assistant = document.getElementById('assistant');
+        const messages = [
+            "مرحبًا! أنا المساعد الصغير",
+            "هل تحتاج مساعدة في تعلم القرآن؟",
+            "اضغط عليّ عندما تحتاج مساعدة",
+            "تعلم ممتع مع منصة أطفال!"
+        ];
+        
+        let currentMessage = 0;
+        
+        assistant.addEventListener('click', () => {
+            alert(messages[currentMessage]);
+            currentMessage = (currentMessage + 1) % messages.length;
+        });
+        
+        // لعبة الرياضيات
+        const mathGameBtn = document.getElementById('mathGameBtn');
+        const mathGame = document.getElementById('mathGame');
+        const mathProblem = document.getElementById('mathProblem');
+        const mathOptions = document.getElementById('mathOptions');
+        const mathFeedback = document.getElementById('mathFeedback');
+        const closeGame = document.getElementById('closeGame');
+        
+        mathGameBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            mathGame.style.display = 'block';
+            generateMathProblem();
+        });
+        
+        closeGame.addEventListener('click', () => {
+            mathGame.style.display = 'none';
+        });
+        
+        function generateMathProblem() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const operations = ['+', '-', '*'];
+            const operation = operations[Math.floor(Math.random() * operations.length)];
+            
+            let problem = `${num1} ${operation} ${num2} = ?`;
+            let correctAnswer;
+            
+            switch(operation) {
+                case '+':
+                    correctAnswer = num1 + num2;
+                    break;
+                case '-':
+                    correctAnswer = num1 - num2;
+                    break;
+                case '*':
+                    correctAnswer = num1 * num2;
+                    break;
+            }
+            
+            mathProblem.textContent = problem;
+            mathFeedback.textContent = '';
+            
+            // توليد خيارات الإجابة
+            mathOptions.innerHTML = '';
+            let answers = [correctAnswer];
+            
+            // إضافة إجابات خاطئة
+            while(answers.length < 4) {
+                let wrongAnswer = correctAnswer + (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                if(wrongAnswer < 0) wrongAnswer = -wrongAnswer;
+                if(!answers.includes(wrongAnswer)) {
+                    answers.push(wrongAnswer);
+                }
+            }
+            
+            // خلط الإجابات
+            answers = answers.sort(() => Math.random() - 0.5);
+            
+            // عرض الخيارات
+            answers.forEach(answer => {
+                const option = document.createElement('div');
+                option.className = 'math-option';
+                option.textContent = answer;
+                option.addEventListener('click', () => checkAnswer(answer, correctAnswer));
+                mathOptions.appendChild(option);
+            });
+        }
+        
+        function checkAnswer(selected, correct) {
+            if(selected === correct) {
+                mathFeedback.textContent = 'إجابة صحيحة! أحسنت!';
+                mathFeedback.className = 'math-feedback correct';
+                
+                // عرض مشكلة جديدة بعد ثانية
+                setTimeout(() => {
+                    generateMathProblem();
+                }, 1500);
+            } else {
+                mathFeedback.textContent = 'حاول مرة أخرى!';
+                mathFeedback.className = 'math-feedback incorrect';
+            }
+        }
+        
+        // التنقل السلس
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // تأثيرات عند التمرير
+        window.addEventListener('scroll', () => {
+            const scrollPosition = window.scrollY;
+            
+            // تأثيرات للبطاقات عند الظهور
+            document.querySelectorAll('.surah-card, .game-card, .badge').forEach(card => {
+                const cardPosition = card.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.3;
+                
+                if(cardPosition < screenPosition) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }
+            });
+        });
+        
+        // تهيئة البطاقات لتفعيل التأثيرات
+        document.querySelectorAll('.surah-card, .game-card, .badge').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease';
+        });
+        
+        // تفعيل التأثيرات عند التحميل
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.querySelectorAll('.surah-card, .game-card, .badge').forEach((card, index) => {
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }, 500);
+        });
+        
+        // نظام الإنجازات
+        const achievements = {
+            quran: {
+                title: "حفظ القرآن",
+                icon: "fas fa-star",
+                unlocked: true,
+                progress: 25
+            },
+            reading: {
+                title: "القراءة",
+                icon: "fas fa-book",
+                unlocked: true,
+                progress: 40
+            },
+            prayer: {
+                title: "الصلاة",
+                icon: "fas fa-pray",
+                unlocked: true,
+                progress: 60
+            },
+            ethics: {
+                title: "الأخلاق",
+                icon: "fas fa-hands-helping",
+                unlocked: false,
+                progress: 15
+            },
+            science: {
+                title: "العلماء",
+                icon: "fas fa-flask",
+                unlocked: false,
+                progress: 5
+            },
+            excellence: {
+                title: "المتميزون",
+                icon: "fas fa-award",
+                unlocked: false,
+                progress: 0
+            }
+        };
+
+        // تحديث واجهة الإنجازات
+        function updateAchievementsUI() {
+            const badges = document.querySelectorAll('.badge');
+            badges.forEach((badge, index) => {
+                const achievementKey = Object.keys(achievements)[index];
+                const achievement = achievements[achievementKey];
+                
+                // تحديث الأيقونة والعنوان
+                badge.innerHTML = `<i class="${achievement.icon}"></i><span>${achievement.title}</span>`;
+                
+                // تحديث حالة القفل
+                if (achievement.unlocked) {
+                    badge.classList.remove('locked');
+                } else {
+                    badge.classList.add('locked');
+                }
+            });
+        }
+
+        // فتح الإنجازات عند إكمال المهام
+        function unlockAchievement(achievementKey) {
+            if (achievements[achievementKey] && !achievements[achievementKey].unlocked) {
+                achievements[achievementKey].unlocked = true;
+                updateAchievementsUI();
+                
+                // عرض رسالة تهنئة
+                const achievement = achievements[achievementKey];
+                alert(`مبروك! لقد فزت بإنجاز ${achievement.title}!`);
+            }
+        }
+
+        // مثال: فتح إنجاز الأخلاق عند النقر على أي لعبة 3 مرات
+        let gameClicks = 0;
+        document.querySelectorAll('.play-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                gameClicks++;
+                if (gameClicks >= 3 && !achievements.ethics.unlocked) {
+                    unlockAchievement('ethics');
+                }
+            });
+        });
+
+        // تحديث واجهة الإنجازات عند التحميل
+        updateAchievementsUI();
+
+        // تخزين الإنجازات في localStorage
+        function saveAchievements() {
+            localStorage.setItem('childPlatformAchievements', JSON.stringify(achievements));
+        }
+
+        // تحميل الإنجازات من localStorage
+        function loadAchievements() {
+            const savedAchievements = localStorage.getItem('childPlatformAchievements');
+            if (savedAchievements) {
+                Object.assign(achievements, JSON.parse(savedAchievements));
+                updateAchievementsUI();
+            }
+        }
+
+        // تحميل الإنجازات المحفوظة عند بدء التشغيل
+        window.addEventListener('load', loadAchievements);
+
+        // حفظ الإنجازات عند تغييرها
+        window.addEventListener('beforeunload', saveAchievements);
+    </script>
+</body>
+</html>
